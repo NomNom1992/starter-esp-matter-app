@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SMART DEVICE</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+        }
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #f0f0f0;
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 300px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin: 0;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #333;
+        }
+        select, input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: white;
+            font-size: 16px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 30px;
+        }
+        .wifi-list {
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 5px;
+            max-height: 160px;
+            overflow-y: auto;
+        }
+        .wifi-option {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .wifi-option:last-child {
+            border-bottom: none;
+        }
+        .wifi-icon {
+            font-size: 20px;
+        }
+        .wifi-strong {
+            color: #4CAF50;
+        }
+        .wifi-medium {
+            color: #FFC107;
+        }
+        .wifi-weak {
+            color: #FF5722;
+        }
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 16px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        .copyright {
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 12px;
+            color: #666;
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="container">
+            <div class="header">
+                <img src="/logo.jpg" alt="Logo" class="logo">
+                <h1>FFT Solution</h1>
+            </div>
+            <form action="/submit" method="post">
+                <label for="wifi-list">Các wifi gần thiết bị của bạn</label>
+                <div id="wifi-list" class="wifi-list">
+                <div>Đang quét...</div>
+                </div>
+
+                <label for="wifi">Wifi đã chọn</label>
+                <input type="text" id="wifi" name="wifi" readonly>
+                
+                <label for="password">Mật khẩu</label>
+                <input type="password" id="password" name="password" required>
+                
+                <!-- <label for="mode">Chọn chế độ</label>
+                <select id="mode" name="mode">
+                    <option value="1">Matter</option>
+                    <option value="2">MQTT</option> -->
+                </select>
+                
+                <input type="submit" value="Xác nhận">
+            </form>
+        </div>
+    </div>
+    <div class="copyright">
+        &copy; 2024 FFT Solution. All rights reserved.
+    </div>
+    <script>
+        function getWifiStrengthIcon(rssi) {
+            if (rssi >= -55) return { icon: '&#9783;', class: 'wifi-strong' };
+            if (rssi >= -70) return { icon: '&#9782;', class: 'wifi-medium' };
+            return { icon: '&#9781;', class: 'wifi-weak' };
+        }
+
+        function updateWiFiList() {
+            fetch('/wifi-scan')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Received data:', data);
+                    if (Array.isArray(data)) {
+                        const wifiList = document.getElementById('wifi-list');
+                        wifiList.innerHTML = '';
+
+                        data.forEach(wifi => {
+                            const div = document.createElement('div');
+                            div.className = 'wifi-option';
+                            
+                            const ssidSpan = document.createElement('span');
+                            ssidSpan.textContent = wifi.ssid;
+                            div.appendChild(ssidSpan);
+
+                            // const iconInfo = getWifiStrengthIcon(wifi.rssi);
+                            // const iconSpan = document.createElement('span');
+                            // iconSpan.className = `wifi-icon ${iconInfo.class}`;
+                            // iconSpan.innerHTML = iconInfo.icon;
+                            // div.appendChild(iconSpan);
+
+                            div.addEventListener('click', function() {
+                                document.getElementById('wifi').value = wifi.ssid;
+                            });
+                            wifiList.appendChild(div);
+                        });
+
+                        if (data.length === 0) {
+                            wifiList.innerHTML = '<div>Không tìm thấy mạng WiFi nào</div>';
+                        }
+                    } else {
+                        console.error('Data is not an array:', data);
+                        document.getElementById('wifi-list').innerHTML = '<div>Lỗi: Dữ liệu không hợp lệ</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching WiFi list:', error);
+                    document.getElementById('wifi-list').innerHTML = `<div>Lỗi: ${error.message}</div>`;
+                });
+                // .finally(() => {
+                //     setTimeout(updateWiFiList, 30000);
+                // });
+        }
+
+        // Quét Wi-Fi khi trang được tải
+        updateWiFiList();
+    </script>
+</body>
+</html>

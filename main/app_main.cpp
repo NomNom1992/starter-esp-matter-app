@@ -204,16 +204,16 @@ extern "C" void app_main()
         // Tạo event loop mặc định
         ESP_ERROR_CHECK(esp_event_loop_create_default());
 
-        // if (load_wifi_config_from_nvs(saved_ssid, saved_password) == ESP_OK && strlen(saved_ssid) > 0)
-        // {
-        //     // We have saved credentials, try to connect
-        //     wifi_connection(saved_ssid, saved_password);
-        // }
-        if (true)
+        if (load_wifi_config_from_nvs(saved_ssid, saved_password) == ESP_OK && strlen(saved_ssid) > 0)
         {
             // We have saved credentials, try to connect
-            wifi_connection("FFT-VT", "11235813");
+            wifi_connection(saved_ssid, saved_password);
         }
+        // if (true)
+        // {
+        //     // We have saved credentials, try to connect
+        //     wifi_connection("FFT-VT", "11235813");
+        // }
         else
         {
             esp_wifi_stop();

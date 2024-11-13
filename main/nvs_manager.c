@@ -110,16 +110,45 @@ esp_err_t load_mode_config_from_nvs(bool *mode)
 
 esp_err_t clear_all_nvs(void)
 {
+    nvs_handle_t my_handle;
+    esp_err_t err;
 
-    // Xóa toàn bộ NVS partition
-    esp_err_t err = nvs_flash_erase();
+    // Open NVS handle
+    err = nvs_open("storage", NVS_READWRITE, &my_handle);
     if (err != ESP_OK)
+        return err;
+
+    // Erase only the WiFi credentials
+    err = nvs_erase_key(my_handle, "wifi_ssid");
+    if (err != ESP_OK && err != ESP_ERR_NVS_NOT_FOUND)
     {
+        nvs_close(my_handle);
         return err;
     }
 
-    vTaskDelay(pdMS_TO_TICKS(100)); // Delay nhỏ để đảm bảo log được in ra
-    esp_restart();                  // Restart ESP32
+    err = nvs_erase_key(my_handle, "wifi_password");
+    if (err != ESP_OK && err != ESP_ERR_NVS_NOT_FOUND)
+    {
+        nvs_close(my_handle);
+        return err;
+    }
 
-    return ESP_OK; // Dòng này sẽ không bao giờ được thực thi do đã restart
+    // Commit the changes
+    err = nvs_commit(my_handle);
+    if (err != ESP_OK)
+    {
+        nvs_close(my_handle);
+        return err;
+    }
+
+    // Close NVS handle
+    nvs_close(my_handle);
+
+    // Optional: small delay before restart
+    vTaskDelay(pdMS_TO_TICKS(100));
+
+    // Restart ESP32
+    esp_restart();
+
+    return ESP_OK;
 }

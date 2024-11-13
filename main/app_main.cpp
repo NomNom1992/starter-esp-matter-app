@@ -45,14 +45,14 @@ SemaphoreHandle_t mutex = NULL;
 key_state_t switch_states[MAX_SWITCH] = {0};
 
 static const char *TAG = "app_main";
-// uint16_t light_endpoint_id = 0;
+
 uint16_t light_endpoint_id1 = 0; // Endpoint cho đèn 1
 uint16_t light_endpoint_id2 = 0; // Endpoint cho đèn 2
 uint16_t light_endpoint_id3 = 0; // Endpoint cho đèn 3
 uint16_t light_endpoint_id4 = 0; // Endpoint cho đèn 4
 
 constexpr auto k_timeout_seconds = 300;
-
+// call back cho device layer
 static void app_event_cb(const ChipDeviceEvent *event, intptr_t arg)
 {
     switch (event->Type)
@@ -156,7 +156,7 @@ static esp_err_t app_attribute_update_cb(attribute::callback_type_t type, uint16
 
     return err;
 }
-
+// ham kiem tra che do chay hien tai la gi
 static bool check_mode()
 {
     esp_err_t err = load_mode_config_from_nvs(&saved_mode);
@@ -195,7 +195,7 @@ extern "C" void app_main()
 
     /* Initialize the ESP NVS layer */
     nvs_flash_init();
-
+    // neu checkmode = true thi chay mode mqtt
     if (check_mode())
     {
         // Khởi tạo network interface
@@ -204,30 +204,29 @@ extern "C" void app_main()
         // Tạo event loop mặc định
         ESP_ERROR_CHECK(esp_event_loop_create_default());
 
-        // if (load_wifi_config_from_nvs(saved_ssid, saved_password) == ESP_OK && strlen(saved_ssid) > 0)
+        if (load_wifi_config_from_nvs(saved_ssid, saved_password) == ESP_OK && strlen(saved_ssid) > 0)
+        {
+            // da co thong tin wwifi ket noi
+            wifi_connection(saved_ssid, saved_password);
+        }
+        // if (true)
         // {
         //     // We have saved credentials, try to connect
-        //     wifi_connection(saved_ssid, saved_password);
+        //     wifi_connection("FFT-VT", "11235813");
         // }
-        if (true)
-        {
-            // We have saved credentials, try to connect
-            wifi_connection("FFT-VT", "11235813");
-        }
         else
         {
             esp_wifi_stop();
             esp_wifi_deinit();
-            // No saved credentials, start captive portal
+            // chua luu config wifi, khoi dong captive portal
             start_captive_portal();
         }
         init_gpio_leds();
         vTaskDelay(500);
-
-        // if (get_wifi_connect_state())
+        // khoi dong mqtt sv
         ESP_LOGI(TAG, "mqtt start here.........");
         ESP_ERROR_CHECK(mqtt_client_init());
-
+        // khoi dong touch sv
         ESP_LOGI(TAG, "Initializing I2C");
         ESP_ERROR_CHECK(i2c_master_init());
 
@@ -239,6 +238,7 @@ extern "C" void app_main()
     }
     else
     {
+        // che do matter
         esp_err_t err = ESP_OK;
 
         // Khởi tạo network interface

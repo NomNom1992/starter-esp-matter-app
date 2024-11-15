@@ -28,6 +28,7 @@
 
 #include "freertos/semphr.h"
 #include "public.h"
+#include "gpio_handle.h"
 
 #include <app/server/CommissioningWindowManager.h>
 #include <app/server/Server.h>
@@ -163,7 +164,7 @@ static bool check_mode()
     if (err != ESP_OK)
     {
         ESP_LOGE(TAG, "Failed to load mode from NVS: %s", esp_err_to_name(err));
-        saved_mode = false; // Default value
+        saved_mode = true; // Default value
         return saved_mode;
     }
 
@@ -227,14 +228,20 @@ extern "C" void app_main()
         ESP_LOGI(TAG, "mqtt start here.........");
         ESP_ERROR_CHECK(mqtt_client_init());
         // khoi dong touch sv
-        ESP_LOGI(TAG, "Initializing I2C");
-        ESP_ERROR_CHECK(i2c_master_init());
+        // ESP_LOGI(TAG, "Initializing I2C");
+        // ESP_ERROR_CHECK(i2c_master_init());
 
-        ESP_LOGI(TAG, "Initializing MPR121");
-        ESP_ERROR_CHECK(mpr121_init());
+        // ESP_LOGI(TAG, "Initializing MPR121");
+        // ESP_ERROR_CHECK(mpr121_init());
 
-        ESP_LOGI(TAG, "touch event start here.........");
-        start_touch_event_task();
+        // ESP_LOGI(TAG, "touch event start here.........");
+        // start_touch_event_task();
+
+        ESP_LOGI(TAG, "Initializing GPIO control");
+        ESP_ERROR_CHECK(gpio_control_init());
+
+        ESP_LOGI(TAG, "Starting GPIO control task");
+        start_gpio_control_task();
     }
     else
     {
@@ -309,13 +316,19 @@ extern "C" void app_main()
 
         PrintOnboardingCodes(chip::RendezvousInformationFlags(chip::RendezvousInformationFlag::kBLE));
 
-        ESP_LOGI(TAG, "Initializing I2C");
-        ESP_ERROR_CHECK(i2c_master_init());
+        // ESP_LOGI(TAG, "Initializing I2C");
+        // ESP_ERROR_CHECK(i2c_master_init());
 
-        ESP_LOGI(TAG, "Initializing MPR121");
-        ESP_ERROR_CHECK(mpr121_init());
+        // ESP_LOGI(TAG, "Initializing MPR121");
+        // ESP_ERROR_CHECK(mpr121_init());
 
-        ESP_LOGI(TAG, "touch event start here.........");
-        start_touch_event_task();
+        // ESP_LOGI(TAG, "touch event start here.........");
+        // start_touch_event_task();
+
+        ESP_LOGI(TAG, "Initializing GPIO control");
+        ESP_ERROR_CHECK(gpio_control_init());
+
+        ESP_LOGI(TAG, "Starting GPIO control task");
+        start_gpio_control_task();
     }
 }

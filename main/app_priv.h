@@ -18,10 +18,10 @@
 /*start of includes for onoff pin for light*/
 #include <driver/gpio.h>
 // #define LED        ((gpio_num_t) 2)
-#define LED1 ((gpio_num_t)0) // LED đầu tiên
+#define LED1 ((gpio_num_t)4) // LED đầu tiên
 #define LED2 ((gpio_num_t)1) // LED thứ hai
 #define LED3 ((gpio_num_t)2) // LED thứ hai
-#define LED4 ((gpio_num_t)3) // LED thứ hai
+#define LED4 ((gpio_num_t)8) // LED thứ hai
 /** Standard max values (used for remapping attributes) */
 #define STANDARD_BRIGHTNESS 100
 #define STANDARD_HUE 360

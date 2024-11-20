@@ -65,14 +65,15 @@ static void gpio_control_task(void *pvParameters)
         current_mode_state = gpio_get_level(MODE_CONTROL_GPIO);
 
         // Xử lý điều khiển đèn
+        // Xử lý điều khiển đèn
         if (current_led_state != last_led_state)
         {
             vTaskDelay(pdMS_TO_TICKS(DEBOUNCE_TIME_MS)); // Debounce
             current_led_state = gpio_get_level(LED_CONTROL_GPIO);
 
             if (current_led_state != last_led_state)
-            {
-                switch_states[0].state = current_led_state;
+            {                                                     // Nếu trạng thái thật sự thay đổi
+                switch_states[0].state = !switch_states[0].state; // Toggle state
 
                 if (saved_mode)
                 {

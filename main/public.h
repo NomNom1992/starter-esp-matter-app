@@ -9,8 +9,8 @@
 
 #define MAX_SWITCH 4
 #define ENABLE_TOPIC_2 1
-#define ENABLE_TOPIC_3 0
-#define ENABLE_TOPIC_4 0
+#define ENABLE_TOPIC_3 1
+#define ENABLE_TOPIC_4 1
 
 typedef struct
 {

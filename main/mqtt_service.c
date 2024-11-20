@@ -3,7 +3,8 @@
 #include "public.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
-#include "mpr121_handle.h"
+#include "gpio_handle.h"
+// #include "mpr121_handle.h"
 
 static const char *TAG = "MQTT_CLIENT";
 

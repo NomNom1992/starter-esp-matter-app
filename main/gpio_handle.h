@@ -13,7 +13,7 @@ extern "C"
 
     esp_err_t gpio_control_init(void);
     void start_gpio_control_task(void);
-
+    void control_gpio_led(int button_index, bool state);
 #endif // GPIO_HANDLE_H
 
 #ifdef __cplusplus
